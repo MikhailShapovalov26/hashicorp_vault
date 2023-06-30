@@ -1,0 +1,24 @@
+stages:
+  - test_vault
+
+test_vault:
+  stage: test_vault
+  image: alpine:latest
+  before_script:
+    - apk --no-cache add curl && \
+            rm -rf /var/cache/apk/*
+  script:
+    # Проверяем имя ref джобы
+    - echo $CI_COMMIT_REF_NAME
+    # и является ли она protected
+    - echo $CI_COMMIT_REF_PROTECTED
+    # Адрес Vault может быть передан через переменную в CI
+    - export VAULT_ADDR=http://vault:8200
+    # Проходим аутентификацию и получаем токен. Время истечения жизни токена и другие  
+    # его параметры можно задать при конфигурации 
+    # JWT Auth - https://www.vaultproject.io/api/auth/jwt#parameters-1
+    - export VAULT_TOKEN="$(vault write -field=token auth/jwt/login role=myproject jwt=$CI_JOB_JWT)"
+    # Теперь используем VAULT_TOKEN для чтения секретов и сохранения их в перемнных окружения
+    - export PASSWORD="$(vault kv get -field=password kv/rahsak)"
+    # Используем секрет
+    - echo $PASSWORD

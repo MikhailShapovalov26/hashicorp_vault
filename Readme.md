@@ -27,7 +27,7 @@
     vault kv get -field=password kv/rahsak
 
 ❯❯ curl \
-    -H "X-Vault-Token: hvs.rcvW1OV6gEZBMAopzLnFW850" \
+    -H "X-Vault-Token: ROOT SECRET" \
     -H "Content-Type: application/json" \
     -X POST \
     -d '{ "data": { "ops": "koko" } }' \
@@ -36,7 +36,7 @@
 
 # get secret with HTTP API
 ❯❯ curl \
-    -H "X-Vault-Token: hvs.rcvW1OV6gEZBMAopzLnFW850" \
+    -H "X-Vault-Token:  ROOT SECRET" \
     -H "Content-Type: application/json" \
     -X GET \
     http://192.168.88.8:8200/v1/kv/bassa
@@ -86,4 +86,11 @@ EOF на 0 уровне без отступов
         jwks_url="https://gitlab.example.com/-/jwks" \
         bound_issuer="gitlab.example.com"
 
+Так как runner и vault установлены локально для тестов необходимо установить соединение между ними, создадим сеть в которую включил runner и vault для чтения секретов
+
+    ~ » docker network create vault-runner
+    ~ » docker network connect vault-runner runner
+    ~ » docker network connect vault-runner vault 
+
 Материал взять https://habr.com/ru/companies/nixys/articles/512754/ про значения можно посмотреть там!
+https://docs.gitlab.com/ee/ci/secrets/
